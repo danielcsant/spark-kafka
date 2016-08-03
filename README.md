@@ -53,16 +53,17 @@ Note that one disadvantage of this approach is that it does not update offsets i
 
 Next, we discuss how to use this approach in your streaming application.
 
-1. **Linking:** This approach is supported only in Scala/Java application. Link your SBT/Maven project with the following artifact (see [Linking section](streaming-programming-guide.html#linking) in the main programming guide for further information).
+**Linking:** This approach is supported only in Scala/Java application. Link your SBT/Maven project with the following artifact (see [Linking section](streaming-programming-guide.html#linking) in the main programming guide for further information).
 
 		```
 		groupId = org.apache.spark
 		artifactId = spark-streaming-kafka-0-8_{{site.SCALA_BINARY_VERSION}}
 		version = {{site.SPARK_VERSION_SHORT}}
+	  
 	  ```
 
 
-2. **Programming:** In the streaming application code, import KafkaUtils and create an input DStream as follows.
+**Programming:** In the streaming application code, import KafkaUtils and create an input DStream as follows.
 
     ```
     import org.apache.spark.streaming.kafka._
@@ -111,6 +112,7 @@ You can also start consuming from any arbitrary offset using other variations of
 
   Scala:
   
+    
     ```
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		var offsetRanges = Array[OffsetRange]()
@@ -131,6 +133,7 @@ You can also start consuming from any arbitrary offset using other variations of
 
   Java:
   
+    
     ```
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		final AtomicReference<OffsetRange[]> offsetRanges = new AtomicReference<>();
@@ -164,6 +167,7 @@ You can also start consuming from any arbitrary offset using other variations of
   
   
   Python:
+
 
     ```
 		offsetRanges = []
