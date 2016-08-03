@@ -55,44 +55,48 @@ Next, we discuss how to use this approach in your streaming application.
 
 1. **Linking:** This approach is supported only in Scala/Java application. Link your SBT/Maven project with the following artifact (see [Linking section](streaming-programming-guide.html#linking) in the main programming guide for further information).
 
+		```
 		groupId = org.apache.spark
 		artifactId = spark-streaming-kafka-0-8_{{site.SCALA_BINARY_VERSION}}
 		version = {{site.SPARK_VERSION_SHORT}}
+	  ```
 
-2. **Programming:** In the streaming application code, import `KafkaUtils` and create an input DStream as follows.
 
-  ```
-  
+2. **Programming:** In the streaming application code, import KafkaUtils and create an input DStream as follows.
+
+    ```
     import org.apache.spark.streaming.kafka._
-
-		val directKafkaStream = KafkaUtils.createDirectStream[
+	  val directKafkaStream = KafkaUtils.createDirectStream[
 			[key class], [value class], [key decoder class], [value decoder class] ](
 			streamingContext, [map of Kafka parameters], [set of topics to consume])
-	```
+	  ```
+
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
 and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
 	
-	 ```
-	
+	  
+	  ```
 		import org.apache.spark.streaming.kafka.*;
 
 		JavaPairInputDStream<String, String> directKafkaStream =
 			KafkaUtils.createDirectStream(streamingContext,
 				[key class], [value class], [key decoder class], [value decoder class],
 				[map of Kafka parameters], [set of topics to consume]);
-  ```
+    ```
+
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
 and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
 
+
 	  ```
 		from pyspark.streaming.kafka import KafkaUtils
 		directKafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
-		
 	  ```
+
 
 You can also pass a `messageHandler` to `createDirectStream` to access `KafkaMessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type. See the [API docs](api/python/pyspark.streaming.html#pyspark.streaming.kafka.KafkaUtils)
@@ -105,10 +109,9 @@ By default, it will start consuming from the latest offset of each Kafka partiti
 You can also start consuming from any arbitrary offset using other variations of `KafkaUtils.createDirectStream`. Furthermore, if you want to access the Kafka offsets consumed in each batch, you can do the following. 
 
 
-Scala
+  Scala:
   
-  ```
-  
+    ```
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		var offsetRanges = Array[OffsetRange]()
 		
@@ -123,13 +126,12 @@ Scala
 		  }
 		  ...
 		}
+    ```
 
-  ```
 
-Java
+  Java:
   
-  ```
-  
+    ```
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		final AtomicReference<OffsetRange[]> offsetRanges = new AtomicReference<>();
 		
@@ -158,12 +160,12 @@ Java
 		    }
 		  }
 		);
-  ```
+    ```
   
-Python
+  
+  Python:
 
-  ```
-  
+    ```
 		offsetRanges = []
 
 		def storeOffsetRanges(rdd):
@@ -178,7 +180,8 @@ Python
 		directKafkaStream\
 		    .transform(storeOffsetRanges)\
 		    .foreachRDD(printOffsetRanges)
-  ```
+    ```
+
 
 You can use this to update Zookeeper yourself if you want Zookeeper-based Kafka monitoring tools to show progress of the streaming application.
 
