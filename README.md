@@ -37,7 +37,7 @@ The other one is to clone the full repository and build the project:
     `mvn clean package`
 
 
-### Direct Approach (No Receivers)
+### Direct Approach (No Receivers) from Spark Documentation
 
 This new receiver-less "direct" approach has been introduced in Spark 1.3 to ensure stronger end-to-end guarantees. Instead of using receivers to receive data, this approach periodically queries Kafka for the latest offsets in each topic+partition, and accordingly defines the offset ranges to process in each batch. When the jobs to process the data are launched, Kafka's simple consumer API is used to read the defined ranges of offsets from Kafka (similar to read files from a file system). Note that this is an experimental feature introduced in Spark 1.3 for the Scala and Java API, in Spark 1.4 for the Python API.
 
@@ -61,48 +61,54 @@ Next, we discuss how to use this approach in your streaming application.
 
 2. **Programming:** In the streaming application code, import `KafkaUtils` and create an input DStream as follows.
 
-	<div class="codetabs">
-	<div data-lang="scala" markdown="1">
-		import org.apache.spark.streaming.kafka._
+  ```
+  
+    import org.apache.spark.streaming.kafka._
 
 		val directKafkaStream = KafkaUtils.createDirectStream[
 			[key class], [value class], [key decoder class], [value decoder class] ](
 			streamingContext, [map of Kafka parameters], [set of topics to consume])
+	```
 
-	You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
-	See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
-	and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
-	</div>
-	<div data-lang="java" markdown="1">
+You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
+See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
+and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
+	
+	 ```
+	
 		import org.apache.spark.streaming.kafka.*;
 
 		JavaPairInputDStream<String, String> directKafkaStream =
 			KafkaUtils.createDirectStream(streamingContext,
 				[key class], [value class], [key decoder class], [value decoder class],
 				[map of Kafka parameters], [set of topics to consume]);
+  ```
 
-	You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
-	See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
-	and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
+You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
+See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
+and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
 
-	</div>
-	<div data-lang="python" markdown="1">
+	  ```
 		from pyspark.streaming.kafka import KafkaUtils
 		directKafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
+		
+	  ```
 
-	You can also pass a `messageHandler` to `createDirectStream` to access `KafkaMessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
-	By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type. See the [API docs](api/python/pyspark.streaming.html#pyspark.streaming.kafka.KafkaUtils)
-	and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/python/streaming/direct_kafka_wordcount.py).
-	</div>
-	</div>
+You can also pass a `messageHandler` to `createDirectStream` to access `KafkaMessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
+By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type. See the [API docs](api/python/pyspark.streaming.html#pyspark.streaming.kafka.KafkaUtils)
+and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/python/streaming/direct_kafka_wordcount.py).
 
-	In the Kafka parameters, you must specify either `metadata.broker.list` or `bootstrap.servers`.
-	By default, it will start consuming from the latest offset of each Kafka partition. If you set configuration `auto.offset.reset` in Kafka parameters to `smallest`, then it will start consuming from the smallest offset. 
 
-	You can also start consuming from any arbitrary offset using other variations of `KafkaUtils.createDirectStream`. Furthermore, if you want to access the Kafka offsets consumed in each batch, you can do the following. 
+In the Kafka parameters, you must specify either `metadata.broker.list` or `bootstrap.servers`.
+By default, it will start consuming from the latest offset of each Kafka partition. If you set configuration `auto.offset.reset` in Kafka parameters to `smallest`, then it will start consuming from the smallest offset. 
 
-	<div class="codetabs">
-	<div data-lang="scala" markdown="1">
+You can also start consuming from any arbitrary offset using other variations of `KafkaUtils.createDirectStream`. Furthermore, if you want to access the Kafka offsets consumed in each batch, you can do the following. 
+
+
+Scala
+  
+  ```
+  
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		var offsetRanges = Array[OffsetRange]()
 		
@@ -117,8 +123,13 @@ Next, we discuss how to use this approach in your streaming application.
 		  }
 		  ...
 		}
-	</div>
-	<div data-lang="java" markdown="1">
+
+  ```
+
+Java
+  
+  ```
+  
 		// Hold a reference to the current offset ranges, so it can be used downstream
 		final AtomicReference<OffsetRange[]> offsetRanges = new AtomicReference<>();
 		
@@ -147,8 +158,12 @@ Next, we discuss how to use this approach in your streaming application.
 		    }
 		  }
 		);
-	</div>
-	<div data-lang="python" markdown="1">
+  ```
+  
+Python
+
+  ```
+  
 		offsetRanges = []
 
 		def storeOffsetRanges(rdd):
@@ -163,12 +178,11 @@ Next, we discuss how to use this approach in your streaming application.
 		directKafkaStream\
 		    .transform(storeOffsetRanges)\
 		    .foreachRDD(printOffsetRanges)
-	</div>
-   	</div>
+  ```
 
-	You can use this to update Zookeeper yourself if you want Zookeeper-based Kafka monitoring tools to show progress of the streaming application.
+You can use this to update Zookeeper yourself if you want Zookeeper-based Kafka monitoring tools to show progress of the streaming application.
 
-	Note that the typecast to HasOffsetRanges will only succeed if it is done in the first method called on the directKafkaStream, not later down a chain of methods. You can use transform() instead of foreachRDD() as your first method call in order to access offsets, then call further Spark methods. However, be aware that the one-to-one mapping between RDD partition and Kafka partition does not remain after any methods that shuffle or repartition, e.g. reduceByKey() or window().
+Note that the typecast to HasOffsetRanges will only succeed if it is done in the first method called on the directKafkaStream, not later down a chain of methods. You can use transform() instead of foreachRDD() as your first method call in order to access offsets, then call further Spark methods. However, be aware that the one-to-one mapping between RDD partition and Kafka partition does not remain after any methods that shuffle or repartition, e.g. reduceByKey() or window().
 
 
 # License #
