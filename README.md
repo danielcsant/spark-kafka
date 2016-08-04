@@ -15,26 +15,26 @@ There are two ways of using Kafka-Receiver library:
 
 The first one is to add the next dependency in your pom.xml:
 
-  ```
-    <dependency>
-      <groupId>com.stratio.receiver</groupId>
-      <artifactId>spark-kafka</artifactId>
-      <version>LATEST</version>
-    </dependency>
-  ```
+```
+<dependency>
+<groupId>com.stratio.receiver</groupId>
+<artifactId>spark-kafka</artifactId>
+<version>LATEST</version>
+</dependency>
+```
 
 The other one is to clone the full repository and build the project:
 
-  ```
-    git clone https://github.com/Stratio/spark-kafka.git
-    mvn clean install
-  ```
+```
+git clone https://github.com/Stratio/spark-kafka.git
+mvn clean install
+```
 
 ### Build
 
 - To package it:
 
-    `mvn clean package`
+`mvn clean package`
 
 
 ### Direct Approach (No Receivers) from Spark Documentation
@@ -55,21 +55,21 @@ Next, we discuss how to use this approach in your streaming application.
 
 **Linking:** This approach is supported only in Scala/Java application. Link your SBT/Maven project with the following artifact (see [Linking section](streaming-programming-guide.html#linking) in the main programming guide for further information).
 
-		```
-      groupId = org.apache.spark
-      artifactId = spark-streaming-kafka-0-8_{{site.SCALA_BINARY_VERSION}}
-      version = {{site.SPARK_VERSION_SHORT}}
-	  ```
+```
+groupId = org.apache.spark
+artifactId = spark-streaming-kafka-0-8_{{site.SCALA_BINARY_VERSION}}
+version = {{site.SPARK_VERSION_SHORT}}
+```
 
 
 **Programming:** In the streaming application code, import KafkaUtils and create an input DStream as follows.
 
-    ```
-      import org.apache.spark.streaming.kafka._
-      val directKafkaStream = KafkaUtils.createDirectStream[
-        [key class], [value class], [key decoder class], [value decoder class] ](
-        streamingContext, [map of Kafka parameters], [set of topics to consume])
-	  ```
+```scala
+import org.apache.spark.streaming.kafka._
+val directKafkaStream = KafkaUtils.createDirectStream[
+[key class], [value class], [key decoder class], [value decoder class] ](
+streamingContext, [map of Kafka parameters], [set of topics to consume])
+```
 
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
@@ -77,14 +77,13 @@ See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUt
 and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
 	
 	  
-	  ```
-      import org.apache.spark.streaming.kafka.*;
-  
-      JavaPairInputDStream<String, String> directKafkaStream =
-        KafkaUtils.createDirectStream(streamingContext,
-          [key class], [value class], [key decoder class], [value decoder class],
-          [map of Kafka parameters], [set of topics to consume]);
-    ```
+```java
+import org.apache.spark.streaming.kafka.*;
+JavaPairInputDStream<String, String> directKafkaStream =
+KafkaUtils.createDirectStream(streamingContext,
+[key class], [value class], [key decoder class], [value decoder class],
+[map of Kafka parameters], [set of topics to consume]);
+```
 
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
@@ -92,10 +91,10 @@ See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUti
 and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
 
 
-	  ```
-      from pyspark.streaming.kafka import KafkaUtils
-      directKafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
-	  ```
+```python
+from pyspark.streaming.kafka import KafkaUtils
+directKafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
+```
 
 
 You can also pass a `messageHandler` to `createDirectStream` to access `KafkaMessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
@@ -109,81 +108,80 @@ By default, it will start consuming from the latest offset of each Kafka partiti
 You can also start consuming from any arbitrary offset using other variations of `KafkaUtils.createDirectStream`. Furthermore, if you want to access the Kafka offsets consumed in each batch, you can do the following. 
 
 
-  Scala:
+Scala:
   
     
-    ```
-      // Hold a reference to the current offset ranges, so it can be used downstream
-      var offsetRanges = Array[OffsetRange]()
-      
-      directKafkaStream.transform { rdd =>
-        offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
-        rdd
-      }.map {
-                    ...
-      }.foreachRDD { rdd =>
-        for (o <- offsetRanges) {
-          println(s"${o.topic} ${o.partition} ${o.fromOffset} ${o.untilOffset}")
-        }
-        ...
+```scala
+// Hold a reference to the current offset ranges, so it can be used downstream
+var offsetRanges = Array[OffsetRange]()
+
+directKafkaStream.transform { rdd =>
+  offsetRanges = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
+  rdd
+}.map {
+              ...
+}.foreachRDD { rdd =>
+  for (o <- offsetRanges) {
+    println(s"${o.topic} ${o.partition} ${o.fromOffset} ${o.untilOffset}")
+  }
+  ...
+}
+```
+
+
+Java:
+  
+
+```java
+// Hold a reference to the current offset ranges, so it can be used downstream
+final AtomicReference<OffsetRange[]> offsetRanges = new AtomicReference<>();
+
+directKafkaStream.transformToPair(
+  new Function<JavaPairRDD<String, String>, JavaPairRDD<String, String>>() {
+    @Override
+    public JavaPairRDD<String, String> call(JavaPairRDD<String, String> rdd) throws Exception {
+      OffsetRange[] offsets = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
+      offsetRanges.set(offsets);
+      return rdd;
+    }
+  }
+).map(
+  ...
+).foreachRDD(
+  new Function<JavaPairRDD<String, String>, Void>() {
+    @Override
+    public Void call(JavaPairRDD<String, String> rdd) throws IOException {
+      for (OffsetRange o : offsetRanges.get()) {
+        System.out.println(
+          o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset()
+        );
       }
-    ```
-
-
-  Java:
-  
-    
-    ```
-      // Hold a reference to the current offset ranges, so it can be used downstream
-      final AtomicReference<OffsetRange[]> offsetRanges = new AtomicReference<>();
-      
-      directKafkaStream.transformToPair(
-        new Function<JavaPairRDD<String, String>, JavaPairRDD<String, String>>() {
-          @Override
-          public JavaPairRDD<String, String> call(JavaPairRDD<String, String> rdd) throws Exception {
-            OffsetRange[] offsets = ((HasOffsetRanges) rdd.rdd()).offsetRanges();
-            offsetRanges.set(offsets);
-            return rdd;
-          }
-        }
-      ).map(
-        ...
-      ).foreachRDD(
-        new Function<JavaPairRDD<String, String>, Void>() {
-          @Override
-          public Void call(JavaPairRDD<String, String> rdd) throws IOException {
-            for (OffsetRange o : offsetRanges.get()) {
-              System.out.println(
-                o.topic() + " " + o.partition() + " " + o.fromOffset() + " " + o.untilOffset()
-              );
-            }
-            ...
-            return null;
-          }
-        }
-      );
-    ```
+      ...
+      return null;
+    }
+  }
+);
+```
   
   
   Python:
 
 
-    ```
-      offsetRanges = []
-  
-      def storeOffsetRanges(rdd):
-          global offsetRanges
-          offsetRanges = rdd.offsetRanges()
-          return rdd
-  
-      def printOffsetRanges(rdd):
-          for o in offsetRanges:
-              print "%s %s %s %s" % (o.topic, o.partition, o.fromOffset, o.untilOffset)
-  
-      directKafkaStream\
-          .transform(storeOffsetRanges)\
-          .foreachRDD(printOffsetRanges)
-    ```
+```python
+offsetRanges = []
+def storeOffsetRanges(rdd):
+    global offsetRanges
+    offsetRanges = rdd.offsetRanges()
+    return rdd
+
+def printOffsetRanges(rdd):
+    for o in offsetRanges:
+        print "%s %s %s %s" % (o.topic, o.partition, o.fromOffset, o.untilOffset)
+
+directKafkaStream\
+    .transform(storeOffsetRanges)\
+    .foreachRDD(printOffsetRanges)
+```
 
 
 You can use this to update Zookeeper yourself if you want Zookeeper-based Kafka monitoring tools to show progress of the streaming application.
