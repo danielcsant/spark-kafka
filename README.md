@@ -73,7 +73,7 @@ streamingContext, [map of Kafka parameters], [set of topics to consume])
 
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
-See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
+See the [API docs](http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
 and the [example](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
 	
 	  
@@ -87,7 +87,7 @@ KafkaUtils.createDirectStream(streamingContext,
 
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
-See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
+See the [API docs](http://spark.apache.org/docs/latest/api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
 and the [example](https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
 
 
