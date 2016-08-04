@@ -74,7 +74,7 @@ streamingContext, [map of Kafka parameters], [set of topics to consume])
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 See the [API docs](api/scala/index.html#org.apache.spark.streaming.kafka.KafkaUtils$)
-and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
+and the [example](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/DirectKafkaWordCount.scala).
 	
 	  
 ```java
@@ -88,7 +88,7 @@ KafkaUtils.createDirectStream(streamingContext,
 
 You can also pass a `messageHandler` to `createDirectStream` to access `MessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 See the [API docs](api/java/index.html?org/apache/spark/streaming/kafka/KafkaUtils.html)
-and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
+and the [example](https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/streaming/JavaDirectKafkaWordCount.java).
 
 
 ```python
@@ -99,7 +99,7 @@ directKafkaStream = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broke
 
 You can also pass a `messageHandler` to `createDirectStream` to access `KafkaMessageAndMetadata` that contains metadata about the current message and transform it to any desired type.
 By default, the Python API will decode Kafka data as UTF8 encoded strings. You can specify your custom decoding function to decode the byte arrays in Kafka records to any arbitrary data type. See the [API docs](api/python/pyspark.streaming.html#pyspark.streaming.kafka.KafkaUtils)
-and the [example]({{site.SPARK_GITHUB_URL}}/blob/master/examples/src/main/python/streaming/direct_kafka_wordcount.py).
+and the [example](https://github.com/apache/spark/blob/master/examples/src/main/python/streaming/direct_kafka_wordcount.py).
 
 
 In the Kafka parameters, you must specify either `metadata.broker.list` or `bootstrap.servers`.
