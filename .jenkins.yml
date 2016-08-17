@@ -1,3 +1,5 @@
+FOSS: true
+
 ITSERVICES:
   - ZOOKEEPER:
       image: stratio/zookeeper:3.4.6
