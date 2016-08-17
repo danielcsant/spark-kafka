@@ -39,9 +39,9 @@
     </description>
 
     <scm>
-        <url>https://github.com/Stratio/Kafka-Receiver.git</url>
-        <connection>scm:git:git://github.com/Stratio/Kafka-Receiver.git</connection>
-        <developerConnection>scm:git:git@github.com:Stratio/Kafka-Receiver.git</developerConnection>
+        <url>https://github.com/Stratio/spark-kafka.git</url>
+        <connection>scm:git:git://github.com/Stratio/spark-kafka.git</connection>
+        <developerConnection>scm:git:git@github.com:Stratio/spark-kafka.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
