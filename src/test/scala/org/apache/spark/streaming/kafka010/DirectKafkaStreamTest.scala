@@ -95,7 +95,7 @@ class DirectKafkaStreamTest
 
   val preferredHosts = LocationStrategies.PreferConsistent
 
-  test("basic stream receiving with multiple topics and smallest starting offset") {
+  ignore("basic stream receiving with multiple topics and smallest starting offset") {
     val topics = List("basic1", "basic2", "basic3")
     val data = Map("a" -> 7, "b" -> 9)
     topics.foreach { t =>
@@ -149,7 +149,7 @@ class DirectKafkaStreamTest
       allReceived.addAll(Arrays.asList(rdd.map(r => (r.key, r.value)).collect(): _*))
     }
     ssc.start()
-    eventually(timeout(30000.milliseconds), interval(1000.milliseconds)) {
+    eventually(timeout(40000.milliseconds), interval(2000.milliseconds)) {
       assert(allReceived.size === expectedTotal,
         "didn't get expected number of messages, messages:\n" +
           allReceived.asScala.mkString("\n"))
@@ -213,7 +213,7 @@ class DirectKafkaStreamTest
       allReceived.addAll(Arrays.asList(rdd.map(r => (r.key, r.value)).collect(): _*))
     }
     ssc.start()
-    eventually(timeout(40000.milliseconds), interval(1000.milliseconds)) {
+    eventually(timeout(40000.milliseconds), interval(2000.milliseconds)) {
       assert(allReceived.size === expectedTotal,
         "didn't get expected number of messages, messages:\n" +
           allReceived.asScala.mkString("\n"))
