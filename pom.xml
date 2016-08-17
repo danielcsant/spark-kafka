@@ -28,7 +28,7 @@
 
     <groupId>com.stratio.receiver</groupId>
     <artifactId>spark-kafka</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
 
     <url>https://github.com/Stratio/Kafka-Receiver</url>
     <name>spark-kafka</name>
